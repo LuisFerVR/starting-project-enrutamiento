@@ -1,6 +1,6 @@
-import { Component, computed, DestroyRef, inject, input, OnInit, signal } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { UsersService } from '../users.service';
-import { ActivatedRoute, RouterLink, RouterOutlet } from '@angular/router';
+import { ActivatedRouteSnapshot, ResolveFn, RouterLink, RouterOutlet, RouterStateSnapshot } from '@angular/router';
 
 @Component({
   selector: 'app-user-tasks',
@@ -9,22 +9,25 @@ import { ActivatedRoute, RouterLink, RouterOutlet } from '@angular/router';
   imports:[RouterOutlet,RouterLink],
   styleUrl: './user-tasks.component.css',
 })
-export class UserTasksComponent implements OnInit{
-  //userId= input.required<string>();
-  private userService= inject(UsersService);
-  userName='';
-  private activedRoute = inject(ActivatedRoute);
-  private destroyRef = inject(DestroyRef);
+export class UserTasksComponent{
+  userName=input.required<string>();
+  message = input<string>();
+  /* private routerActivated = inject(ActivatedRoute);
 
   ngOnInit() {
-    const subscription =this.activedRoute.paramMap.subscribe({
-      next:(paramMap)=>this.userName=this.userService.users.find((user)=>user.id===paramMap.get('userId'))?.name||''
-    });
-    this.destroyRef.onDestroy(()=>subscription.unsubscribe());
-  }
-  
-  /* userName=computed(()=>{
-    this.userService.users.find(user=>user.id===this.userId())?.name;
-  }) */
+    this.routerActivated.data.subscribe({
+      next:(data)=>console.log(data)
+    })
+  } */
  
+}
+
+
+export const resolveUserName: ResolveFn<string> = (
+  activatedRoute : ActivatedRouteSnapshot,
+  routerState:RouterStateSnapshot
+)=>{
+  const userService = inject(UsersService);
+  const userName=userService.users.find((user)=>user.id===activatedRoute.paramMap.get('userId'))?.name||''
+  return userName;
 }
